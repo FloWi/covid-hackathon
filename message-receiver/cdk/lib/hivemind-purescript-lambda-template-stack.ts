@@ -12,11 +12,21 @@ export class HivemindPurescriptLambdaTemplateStack extends cdk.Stack {
       vpcId: 'vpc-0b0b036cf05edd0b6'
     });
 
+    const sg = new ec2.SecurityGroup(this, 'lambda-security-group', {
+      vpc,
+      description: "all outbound",
+      allowAllOutbound: true
+    })
+
+    sg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.allTraffic(), "allow all traffic")
+
+
     const fn = new lambda.Function(this, 'covid-hackathon-message-receiver-lambda', {
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.handler',
       code: lambda.Code.fromAsset("../lambda.zip"),
-      vpc: vpc
+      vpc: vpc,
+      securityGroups: [sg]
     });
 
     const api = new apigateway.LambdaRestApi(this, 'covid-hackathon-message-receiver-api', {
