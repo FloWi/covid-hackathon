@@ -1,0 +1,16 @@
+{
+  "name": "ui",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "bundle": "npx spago bundle-module --to index.js",
+    "zip": "zip -r ui.zip ./node_modules ./index.js index.html",
+    "test": "npx spago test"
+  },
+  "author": "",
+  "license": "UNLICENSED"
+}
