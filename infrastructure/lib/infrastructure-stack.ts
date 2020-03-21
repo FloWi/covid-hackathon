@@ -1,7 +1,6 @@
 import * as cdk from "@aws-cdk/core";
 import * as es from "@aws-cdk/aws-elasticsearch";
 import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from "@aws-cdk/aws-iam"
 import { BastionHostLinux, Peer } from "@aws-cdk/aws-ec2";
 
 
