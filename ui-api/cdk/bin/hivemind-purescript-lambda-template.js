@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+require("source-map-support/register");
+const cdk = require("@aws-cdk/core");
+const hivemind_purescript_lambda_template_stack_1 = require("../lib/hivemind-purescript-lambda-template-stack");
+const app = new cdk.App();
+new hivemind_purescript_lambda_template_stack_1.HivemindPurescriptLambdaTemplateStack(app, 'covid-hackathon-ui-api', {
+    env: {
+        region: process.env.AWS_REGION,
+        account: process.env.AWS_ACCOUNT
+    }
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaGl2ZW1pbmQtcHVyZXNjcmlwdC1sYW1iZGEtdGVtcGxhdGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJoaXZlbWluZC1wdXJlc2NyaXB0LWxhbWJkYS10ZW1wbGF0ZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7QUFDQSx1Q0FBcUM7QUFDckMscUNBQXFDO0FBQ3JDLGdIQUF5RztBQUV6RyxNQUFNLEdBQUcsR0FBRyxJQUFJLEdBQUcsQ0FBQyxHQUFHLEVBQUUsQ0FBQztBQUMxQixJQUFJLGlGQUFxQyxDQUFDLEdBQUcsRUFBRSx3QkFBd0IsRUFBRTtJQUNyRSxHQUFHLEVBQUU7UUFDRCxNQUFNLEVBQUUsT0FBTyxDQUFDLEdBQUcsQ0FBQyxVQUFVO1FBQzlCLE9BQU8sRUFBRSxPQUFPLENBQUMsR0FBRyxDQUFDLFdBQVc7S0FDbkM7Q0FDSixDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIjIS91c3IvYmluL2VudiBub2RlXG5pbXBvcnQgJ3NvdXJjZS1tYXAtc3VwcG9ydC9yZWdpc3Rlcic7XG5pbXBvcnQgKiBhcyBjZGsgZnJvbSAnQGF3cy1jZGsvY29yZSc7XG5pbXBvcnQgeyBIaXZlbWluZFB1cmVzY3JpcHRMYW1iZGFUZW1wbGF0ZVN0YWNrIH0gZnJvbSAnLi4vbGliL2hpdmVtaW5kLXB1cmVzY3JpcHQtbGFtYmRhLXRlbXBsYXRlLXN0YWNrJztcblxuY29uc3QgYXBwID0gbmV3IGNkay5BcHAoKTtcbm5ldyBIaXZlbWluZFB1cmVzY3JpcHRMYW1iZGFUZW1wbGF0ZVN0YWNrKGFwcCwgJ2NvdmlkLWhhY2thdGhvbi11aS1hcGknLCB7XG4gICAgZW52OiB7XG4gICAgICAgIHJlZ2lvbjogcHJvY2Vzcy5lbnYuQVdTX1JFR0lPTixcbiAgICAgICAgYWNjb3VudDogcHJvY2Vzcy5lbnYuQVdTX0FDQ09VTlRcbiAgICB9XG59KTtcbiJdfQ==
