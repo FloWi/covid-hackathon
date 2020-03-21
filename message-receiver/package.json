@@ -11,12 +11,14 @@
   },
   "devDependencies": {
     "purescript": "^0.13.6",
+    "purty": "^6.0.2",
     "spago": "^0.13.1"
   },
   "scripts": {
     "bundle": "npx spago bundle-module --to Main.js",
     "zip": "zip -r lambda.zip ./node_modules ./index.js ./Main.js",
-    "test": "npx spago test"
+    "test": "npx spago test",
+    "mariekondo": "rm lambda.zip && npm run bundle && rm -rf ./node_modules && npm install --production &&  npm run zip"
   },
   "author": "",
   "license": "UNLICENSED"
