@@ -7,10 +7,19 @@
     "test": "test"
   },
   "scripts": {
-    "bundle": "npx spago bundle-module --to index.js",
-    "zip": "zip -r ui.zip ./node_modules ./index.js index.html",
+    "dev": "parcel -p 9000 dev.html",
+    "bundle": "npx spago bundle-app --to output/Main.js && npx parcel build -d public --bundle-node-modules index.html styles.css",
+    "zip": "(cd public; zip -r ../ui.zip .)",
     "test": "npx spago test"
   },
   "author": "",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "parcel-bundler": "^1.12.4",
+    "spago": "^0.14.0"
+  },
+  "dependencies": {
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  }
 }

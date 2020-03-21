@@ -24,7 +24,7 @@ export class CovidUiStack extends cdk.Stack {
     const deployment = new s3deploy.BucketDeployment(this, 'covid-website', {
       sources: [asset],
       destinationBucket: bucket,
-      //destinationKeyPrefix: 'web/static' // optional prefix in destination bucket
+      //destinationKeyPrefix: 'public' // optional prefix in destination bucket
     });
 
   }
