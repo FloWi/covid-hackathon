@@ -1,6 +1,8 @@
 import * as cdk from "@aws-cdk/core";
 import * as es from "@aws-cdk/aws-elasticsearch";
-import ec2 = require('@aws-cdk/aws-ec2');
+import * as ec2 from '@aws-cdk/aws-ec2';
+import { BastionHostLinux, Peer } from "@aws-cdk/aws-ec2";
+
 
 export class InfrastructureStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -34,7 +36,53 @@ export class InfrastructureStack extends cdk.Stack {
           subnetIds: [privateSubnetIds[0]] //although it's an array, it requires only one subnet
         }
       }
-    );
+    )
+
+    const bastion = new BastionHostLinux(this, "bastion", {
+      vpc: vpc,
+      instanceName: 'covid-bastion',
+      subnetSelection: { subnetType: ec2.SubnetType.PUBLIC }
+    })
+
+    bastion.allowSshAccessFrom(Peer.anyIpv4())
+
   }
 }
 
+/*
+import autoscaling = require('@aws-cdk/aws-autoscaling');
+import ec2 = require('@aws-cdk/aws-ec2');
+import elb = require('@aws-cdk/aws-elasticloadbalancing');
+import cdk = require('@aws-cdk/core');
+
+class LoadBalancerStack extends cdk.Stack {
+  constructor(app: cdk.App, id: string) {
+    super(app, id);
+
+    const vpc = new ec2.Vpc(this, 'VPC');
+
+    const asg = new autoscaling.AutoScalingGroup(this, 'ASG', {
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+    });
+
+    const lb = new elb.LoadBalancer(this, 'LB', {
+      vpc,
+      internetFacing: true,
+      healthCheck: {
+        port: 80
+      },
+    });
+
+    lb.addTarget(asg);
+    const listener = lb.addListener({ externalPort: 80 });
+
+    listener.connections.allowDefaultPortFromAnyIpv4('Open to the world');
+  }
+}
+*/
+
+/*
+aws ec2-instance-connect send-ssh-public-key --instance-id i-04932a6a6696e56f0 --availability-zone eu-west-1a --instance-os-user ec2-user --ssh-public-key file:///Users/florian_witteler/programming/hivemind/.ssh/hivemind/id.rsa.pub
+*/
