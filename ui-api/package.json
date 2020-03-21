@@ -1,0 +1,23 @@
+{
+  "name": "hivemind-purescript-lambda-template",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "purescript": "^0.13.6",
+    "spago": "^0.13.1"
+  },
+  "scripts": {
+    "bundle": "npx spago bundle-module --to Main.js",
+    "zip": "zip -r lambda.zip ./node_modules ./index.js ./Main.js",
+    "test": "npx spago test"
+  },
+  "author": "",
+  "license": "UNLICENSED"
+}
