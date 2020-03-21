@@ -1,0 +1,14 @@
+version: '3.0'
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app/
+    ports:
+      - "3000"
+      - "8921:5000"
+    entrypoint: /bin/sh
+    stdin_open: true
+    tty: true
