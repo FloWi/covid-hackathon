@@ -3,6 +3,7 @@ import lambda = require('@aws-cdk/aws-lambda');
 import path = require('path');
 import apigateway = require('@aws-cdk/aws-apigateway');
 import ec2 = require('@aws-cdk/aws-ec2');
+import * as iam from '@aws-cdk/aws-iam'
 
 export class HivemindPurescriptLambdaTemplateStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -28,6 +29,13 @@ export class HivemindPurescriptLambdaTemplateStack extends cdk.Stack {
       vpc: vpc,
       securityGroups: [sg]
     });
+
+    const policyStatement = new iam.PolicyStatement()
+    policyStatement.addAllResources()
+    policyStatement.addActions("es:*")
+
+    fn.addToRolePolicy(policyStatement)
+
 
     const api = new apigateway.LambdaRestApi(this, 'covid-hackathon-message-receiver-api', {
       handler: fn,
