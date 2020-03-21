@@ -1,4 +1,4 @@
-# Template for a simple purescript aws lambda
+# Message Receiver
 
 ## Development
 ```
