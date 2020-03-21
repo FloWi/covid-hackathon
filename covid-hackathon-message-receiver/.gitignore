@@ -1,0 +1,15 @@
+
+!jest.config.js
+*.d.ts
+node_modules
+
+# CDK asset staging directory
+cdk/.cdk.staging
+cdk/cdk.out
+lambda.zip
+
+# Purescript
+.psc-ide-port
+.spago/
+Main.js 
+output/
