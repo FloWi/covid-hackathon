@@ -4,7 +4,7 @@ We organizse ourselves [here](TINYTASKS.md).
 
 ## Tech Stack
 
-- CDK with typescript for infrastructure
+- CDK with typescript for [infrastructure](infrastructure/README.md)
 - Purescript for frontend
 - HTTP APIs with JSON payloads between frontend/backend
 
@@ -38,5 +38,3 @@ Twilio sms api - https://www.twilio.com/docs/sms
 Elastic search rest api - https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-geo-distance-query.html
 
 Mapbox geocoding - https://docs.mapbox.com/api/search/
-
-#
