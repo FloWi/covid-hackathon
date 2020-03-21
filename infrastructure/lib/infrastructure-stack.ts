@@ -16,8 +16,16 @@ export class InfrastructureStack extends cdk.Stack {
     const privateSubnetIds = vpc.privateSubnets.map((subnet) => subnet.subnetId);
     const defaultSg = ec2.SecurityGroup.fromSecurityGroupId(this, 'default-sg', vpc.vpcDefaultSecurityGroup);
 
-    // The code that defines your stack goes here
+    const sg = new ec2.SecurityGroup(this, 'elastic-search', {
+      vpc,
+      description: "allow access to es",
+      allowAllOutbound: true
+    })
 
+    sg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.allTraffic(), "allow all traffic")
+
+    // The code that defines your stack goes here
+    const securityGroupIds = [defaultSg, sg].map((sg) => sg.securityGroupId)
     const elasticSearch = new es.CfnDomain(this, "covid-es-in-vpc",
       {
         domainName: 'covid-es-in-vpc',
@@ -32,8 +40,23 @@ export class InfrastructureStack extends cdk.Stack {
           volumeSize: 10
         },
         vpcOptions: {
-          securityGroupIds: [defaultSg.securityGroupId],
+          securityGroupIds: securityGroupIds,
           subnetIds: [privateSubnetIds[0]] //although it's an array, it requires only one subnet
+        },
+        accessPolicies: {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Action": [
+                "es:*"
+              ],
+              "Resource": "*"
+            }
+          ]
         }
       }
     )
