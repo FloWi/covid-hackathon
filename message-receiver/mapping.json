@@ -1,0 +1,30 @@
+{
+  "properties": {
+    "createdAt": {
+      "type": "date"
+    },
+    "store": {
+      "properties": {
+        "name": {
+          "type": "keyword"
+        },
+        "address": {
+          "properties": {
+            "city": {
+              "type": "keyword"
+            },
+            "street": {
+              "type": "keyword"
+            },
+            "zip": {
+              "type": "keyword"
+            }
+          }
+        },
+        "location": {
+          "type": "geo_point"
+        }
+      }
+    }
+  }
+}

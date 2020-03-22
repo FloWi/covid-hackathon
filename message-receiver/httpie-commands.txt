@@ -1,0 +1,16 @@
+10027  2020-03-22 11:35  cat example-meesage.json |  http --verify no POST https://localhost:12345/vouchers/voucherOffer
+10028  2020-03-22 11:35  http --verify no https://localhost:12345/vouchers
+10029  2020-03-22 11:36  http --verify no https://localhost:12345/vouchers | jq "." > overview.json
+10030  2020-03-22 11:36  http --verify no DELETE https://localhost:12345/vouchers
+10031  2020-03-22 11:37  http --verify no PUT https://localhost:12345/vouchers
+10032  2020-03-22 11:37  cat example-meesage.json |  http --verify no POST https://localhost:12345/vouchers/voucherOffer
+10033  2020-03-22 11:37  http --verify no https://localhost:12345/vouchers | jq "." > overview.json
+10034  2020-03-22 11:38  cat mapping.json |  http --verify no PUT https://localhost:12345/vouchers
+10035  2020-03-22 11:41  http --verify no DELETE https://localhost:12345/vouchers
+10036  2020-03-22 11:41  http --verify no PUT https://localhost:12345/vouchers
+10037  2020-03-22 11:41  http --verify no https://localhost:12345/vouchers
+10038  2020-03-22 11:42  cat mapping.json |  http --verify no PUT https://localhost:12345/vouchers
+10039  2020-03-22 11:44  cat mapping.json |  http --verify no PUT https://localhost:12345/vouchers/_mapping
+10040  2020-03-22 11:48  cat mapping.json |  http --verify no PUT https://localhost:12345/vouchers/voucherOffer/_mapping
+10041  2020-03-22 11:49  cat example-meesage.json |  http --verify no POST https://localhost:12345/vouchers
+10042  2020-03-22 11:49  cat example-meesage.json |  http --verify no POST https://localhost:12345/vouchers/voucherOffer

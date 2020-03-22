@@ -1,0 +1,28 @@
+"query": {
+    "query": { "match_all": {} },
+    "filtered": {
+      "filter": {
+        "geo_distance": {
+          "distance": "12km",
+          "store.location": {
+            "lat": 52.5,
+            "lon": 13.4
+          }
+        }
+      }
+    }
+  },
+  "query2": {
+    "geo_bounding_box": {
+      "location": {
+        "top_left": {
+          "lat": 53,
+          "lon": 14
+        },
+        "bottom_right": {
+          "lat": 52,
+          "lon": 13
+        }
+      }
+    }
+  }

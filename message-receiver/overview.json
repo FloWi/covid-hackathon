@@ -1,0 +1,74 @@
+{
+  "vouchers": {
+    "aliases": {},
+    "mappings": {
+      "voucherOffer": {
+        "properties": {
+          "createdAt": {
+            "type": "date"
+          },
+          "store": {
+            "properties": {
+              "address": {
+                "properties": {
+                  "city": {
+                    "type": "text",
+                    "fields": {
+                      "keyword": {
+                        "type": "keyword",
+                        "ignore_above": 256
+                      }
+                    }
+                  },
+                  "street": {
+                    "type": "text",
+                    "fields": {
+                      "keyword": {
+                        "type": "keyword",
+                        "ignore_above": 256
+                      }
+                    }
+                  },
+                  "zip": {
+                    "type": "text",
+                    "fields": {
+                      "keyword": {
+                        "type": "keyword",
+                        "ignore_above": 256
+                      }
+                    }
+                  }
+                }
+              },
+              "location": {
+                "type": "geo_point"
+                }
+              },
+              "name": {
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 256
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "settings": {
+      "index": {
+        "creation_date": "1584873421141",
+        "number_of_shards": "5",
+        "number_of_replicas": "1",
+        "uuid": "XaSrHcTqQxGj-1PY4LT3aA",
+        "version": {
+          "created": "6000199"
+        },
+        "provided_name": "vouchers"
+      }
+    }
+  }
+}
