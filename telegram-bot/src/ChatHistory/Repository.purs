@@ -1,7 +1,6 @@
 module ChatHistory.Repository where
 
 import Prelude
-
 import ChatHistory.Types (ChatHistory(..), ChatHistoryRepository)
 import Data.Array (fold, (:))
 import Data.Map as Map
@@ -16,22 +15,51 @@ mkChatHistoryRepoInMemory :: Effect ChatHistoryRepository
 mkChatHistoryRepoInMemory = do
   ref <- new mempty
   let
-    getChatHistory chatId = liftEffect do
-      fold <<< Map.lookup chatId <$> read ref
+    getChatHistory chatId =
+      liftEffect do
+        fold <<< Map.lookup chatId <$> read ref
 
-    addToHistory chatId msg = liftEffect do
-      ref # modify_ (Map.alter upsert chatId)
+    addToHistory chatId msg =
+      liftEffect do
+        ref # modify_ (Map.alter upsert chatId)
       where
       upsert = case _ of
-        Nothing -> Just (ChatHistory [msg])
+        Nothing -> Just (ChatHistory [ msg ])
         Just (ChatHistory ch) -> Just (ChatHistory (msg : ch))
 
-    deleteChatHistory chatId = liftEffect do
-      ref # modify_ (Map.delete chatId)
-      
-  pure 
+    deleteChatHistory chatId =
+      liftEffect do
+        ref # modify_ (Map.delete chatId)
+  pure
     { getChatHistory
-    , addToHistory 
+    , addToHistory
     , deleteChatHistory
     }
 
+type ChatbotHistoryElasticsearchEndpointUrl
+  = String
+
+mkChatHistoryRepoInElasticsearch :: ChatbotHistoryElasticsearchEndpointUrl -> Effect ChatHistoryRepository
+mkChatHistoryRepoInElasticsearch esEndpoint = do
+  ref <- new mempty
+  let
+    getChatHistory chatId =
+      liftEffect do
+        fold <<< Map.lookup chatId <$> read ref
+
+    addToHistory chatId msg =
+      liftEffect do
+        ref # modify_ (Map.alter upsert chatId)
+      where
+      upsert = case _ of
+        Nothing -> Just (ChatHistory [ msg ])
+        Just (ChatHistory ch) -> Just (ChatHistory (msg : ch))
+
+    deleteChatHistory chatId =
+      liftEffect do
+        ref # modify_ (Map.delete chatId)
+  pure
+    { getChatHistory
+    , addToHistory
+    , deleteChatHistory
+    }
