@@ -13,6 +13,8 @@ The bot will be deactivated soon though.
 We organizse ourselves [here](TINYTASKS.md).
 Contributors of the project can be found [here](CONTRIBUTORS.md).
 
+Copyright notes can be found [here](COPYRIGHTS.md).
+
 ## Tech Stack
 
 - CDK with typescript for [infrastructure](infrastructure/README.md)
