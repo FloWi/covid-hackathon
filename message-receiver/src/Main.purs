@@ -1,19 +1,15 @@
 module Main where
 
 import Prelude
-import Control.Promise (Promise, fromAff, toAff)
+import Control.Promise (Promise, fromAff)
 import Data.Either (Either(..))
-import Data.Semigroup.Foldable (intercalateMap)
 import Effect (Effect)
-import Effect.Aff (Aff, forkAff, joinFiber, launchAff_, runAff, attempt)
+import Effect.Aff (Aff, attempt)
 import Effect.Class.Console (log)
-import Effect.Class (liftEffect)
-import Foreign (renderForeignError)
 import Foreign.Object as FO
 import Milkis as M
 import Milkis.Impl.Node (nodeFetch)
-import Simple.JSON (readJSON, writeJSON)
-import Control.Promise as Promise
+import Simple.JSON (writeJSON)
 
 type Input
   = { body :: String
@@ -32,7 +28,7 @@ type Location
     }
 
 type VoucherOffer
-  = { info :: String
+  = { name :: String
     , location :: Location
     }
 
@@ -58,14 +54,10 @@ run :: Input -> Effect (Promise Output)
 run { body } =
   fromAff do
     log $ "Received body " <> body
-    let
-      voucherOffer = readJSON body
-    case voucherOffer of
-      Left errors -> log (intercalateMap "\n" renderForeignError errors)
-      Right ok -> logVoucherOffer ok
     maybeText <- attempt $ postElasticSearch body >>= M.text
-    log $ "Received this from elasticsearch " <> (show maybeText)
-    --log $ "I'm here " <> text
-    pure $ { statusCode: 200, body: responseBody, isBase64Encoded: false, headers: responseHeaders }
+    log $ "Received this from elasticsearch " <> show maybeText
+    pure case maybeText of
+      Left e -> { statusCode: 500, body: show e, isBase64Encoded: false, headers: responseHeaders }
+      Right _ -> { statusCode: 200, body: successResponseBody, isBase64Encoded: false, headers: responseHeaders }
   where
-  responseBody = writeJSON { result: "Posted request successfully to elasticsearch" }
+  successResponseBody = writeJSON { result: "Posted request successfully to elasticsearch" }
