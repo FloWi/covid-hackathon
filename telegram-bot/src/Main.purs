@@ -11,11 +11,13 @@ import Effect.Aff (launchAff_)
 import Effect.Class.Console (log, logShow)
 import Foreign (F)
 import MessageHandler as MessageHandler
+import Milkis as M
+import Milkis.Impl.Node (nodeFetch)
 import Node.Process (lookupEnv)
 import Partial.Unsafe (unsafeCrashWith)
 import ResponseChannel (mkResponseChannel)
 import TelegramBot (Bot, Message, Token, connect, onMessage)
-import VoucherLocation.Repository (voucherLocationRepoDummy)
+import VoucherLocation.Repository (mkVoucherLocationRepo)
 
 getToken :: Effect Token
 getToken = lookupEnv "TELEGRAM_BOT_TOKEN" <#> fromMaybe' (\_ -> unsafeCrashWith "Can't get token")
@@ -33,7 +35,7 @@ mkContext :: Bot -> Effect Ctx
 mkContext bot = do
   historyRepo <- mkChatHistoryRepoInMemory
   let responseChannel = mkResponseChannel bot
-  let voucherLocationRepo = voucherLocationRepoDummy
+  let voucherLocationRepo = mkVoucherLocationRepo (M.fetch nodeFetch)
   pure
       { responseChannel
       , historyRepo

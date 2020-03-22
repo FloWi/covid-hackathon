@@ -55,8 +55,9 @@ handleConfirmation vouchers history = do
           name <- History.findLatestInfo history
           pure { loc, name }
       case maybeLocationAndName of
-        Just { loc, name } -> vouchers.create loc name 
-        Nothing -> log "Got confirmation, but can't find location and name"
+        Just { loc, name } -> vouchers.create loc name >>= (\x -> unless x $ log "oh shit!")
+        Nothing -> 
+          log "Got confirmation, but can't find location and name"
 
 -- | Parses incoming messages based on the previous call to action
 parseMessageWithHistory ∷ ChatHistory -> Message -> Msg
