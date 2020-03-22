@@ -22,16 +22,6 @@ type Output
     , headers :: FO.Object String
     }
 
-type Location
-  = { lon :: Number
-    , lat :: Number
-    }
-
-type VoucherOffer
-  = { name :: String
-    , location :: Location
-    }
-
 fetch :: M.Fetch
 fetch = M.fetch nodeFetch
 
@@ -43,9 +33,6 @@ postElasticSearch body = fetch (M.URL "https://vpc-covid-es-in-vpc-sattub32j5fqd
     , body
     , headers: M.makeHeaders { "Content-Type": "application/json" }
     }
-
-logVoucherOffer :: VoucherOffer -> Aff Unit
-logVoucherOffer vo = log (writeJSON vo)
 
 responseHeaders :: FO.Object String
 responseHeaders = FO.empty
