@@ -1,14 +1,13 @@
 module Main where
 
 import Prelude
-
+import Control.Promise (Promise, fromAff)
 import Data.Either (Either(..))
 import Data.Semigroup.Foldable (intercalateMap)
 import Effect (Effect)
 import Effect.Aff (Aff, launchAff_)
-import Effect.Class.Console (log)
+import Effect.Class.Console (log, logShow)
 import Foreign (renderForeignError)
-
 import Foreign.Object as FO
 import Milkis as M
 import Milkis.Impl.Node (nodeFetch)
@@ -18,29 +17,101 @@ type Input
   = { body :: String
     }
 
-type Output
-  = { statusCode :: Int,
-      body :: String,
-      isBase64Encoded :: Boolean,
-      headers :: FO.Object String
-    }
-
 type Location
   = { lon :: Number
     , lat :: Number
     }
 
-type VoucherOffer
-  = { info :: String
+type VoucherApiRequest
+  = { location :: Location
+    }
+
+type Store
+  = { name :: String
     , location :: Location
+    }
+
+type VoucherApiResponse
+  = { voucherOffers :: Array Store
+    }
+
+type Output
+  = { statusCode :: Int
+    , body :: String
+    , isBase64Encoded :: Boolean
+    , headers :: FO.Object String
+    }
+
+type EsGeoRequest
+  = { distanceMeters :: Int
+    , location :: Location
+    }
+
+type EsGeoQueryJSON
+  = { query ::
+        { bool ::
+            { filter ::
+                { geo_distance ::
+                    { distance :: String
+                    , "store.location" ::
+                        { lat :: Number
+                        , lon :: Number
+                        }
+                    }
+                }
+            , must ::
+                { match_all :: Record ()
+                }
+            }
+        }
+    }
+
+toEsQuery :: EsGeoRequest -> EsGeoQueryJSON
+toEsQuery r =
+  { "query":
+      { "bool":
+          { "must":
+              { "match_all": {}
+              }
+          , "filter":
+              { "geo_distance":
+                  { "distance": show r.distanceMeters <> "km"
+                  , "store.location":
+                      { "lat": r.location.lat
+                      , "lon": r.location.lon
+                      }
+                  }
+              }
+          }
+      }
+  }
+
+type VoucherOfferJson
+  = { store ::
+        { location ::
+            { lat :: Number
+            , lon :: Number
+            }
+        , name :: String
+        }
+    }
+
+type EsQueryResponse
+  = { hits ::
+        { hits ::
+            Array
+              { _score :: Int
+              , _source :: VoucherOfferJson
+              }
+        , max_score :: Int
+        , total :: Int
+        }
     }
 
 example :: String
 example =
   """
-  { "info": "I have vouchers", 
-    "location": { "lon": 52.52437, "lat": 13.41053 }
-  }
+    { "lat": 50.935, "lon": 6.953 }
   """
 
 fetch :: M.Fetch
@@ -49,31 +120,46 @@ fetch = M.fetch nodeFetch
 fetchGoogle :: Aff M.Response
 fetchGoogle = fetch (M.URL "https://www.google.com") M.defaultFetchOptions
 
-logVoucherOffer :: VoucherOffer -> Aff Unit
-logVoucherOffer vo = log (writeJSON vo)
+retrieveVoucherStores :: Location -> Aff (Array VoucherOfferJson)
+retrieveVoucherStores location = do
+  let
+    geoReq = { distanceMeters: 5, location: location }
+  let
+    esQuery = toEsQuery geoReq
+  esResp <- getElasticSearch $ writeJSON esQuery
+  text <- M.text esResp
+  case readJSON text of
+    Left errors -> log (intercalateMap "\n" renderForeignError errors) $> []
+    Right (ok :: EsQueryResponse) -> pure $ map _._source ok.hits.hits
+
+getElasticSearch :: String -> Aff M.Response
+--getElasticSearch body = fetch (M.URL "https://vpc-covid-es-in-vpc-sattub32j5fqdokoslmc4kjvvi.eu-west-1.es.amazonaws.com/vouchers/_search") opts
+getElasticSearch body = fetch (M.URL "http://localhost:12345/vouchers/_search") opts
+  where
+  opts =
+    { method: M.postMethod
+    , body
+    , headers: M.makeHeaders { "Content-Type": "application/json" }
+    }
 
 main :: Effect Unit
 main =
   launchAff_ do
-    let
-      voucherOffer = readJSON example
-    case voucherOffer of
+    case readJSON example of
       Left errors -> log (intercalateMap "\n" renderForeignError errors)
-      Right ok -> logVoucherOffer ok
-    response <- fetchGoogle
-    text <- M.text response
-    log text
+      Right ok -> do
+        stores <- retrieveVoucherStores ok
+        logShow stores
 
 responseHeaders :: FO.Object String
 responseHeaders = FO.empty
 
-run :: Input -> Effect Output
-run { body } = do
-  log $ "Received body " <> body
-  pure $ { statusCode : 200, body: responseBody, isBase64Encoded : false , headers : responseHeaders }
-  where
-  responseBody = writeJSON { hello: "World" } 
-  
--- handler :: Input -> Output
--- handler = unsafePerformEffect <<< run
-
+run :: Input -> Effect (Promise Output)
+run { body } =
+  fromAff do
+    log $ "Received body " <> body
+    output <- case readJSON example of
+      Left errors -> log (intercalateMap "\n" renderForeignError errors) $> []
+      Right ok -> retrieveVoucherStores ok
+    pure $ { statusCode: 200, body: writeJSON output, isBase64Encoded: false, headers: responseHeaders }
+ -- handler :: Input -> Output -- handler = unsafePerformEffect <<< run
