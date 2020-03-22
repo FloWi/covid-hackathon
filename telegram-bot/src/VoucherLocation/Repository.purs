@@ -23,6 +23,8 @@ mkVoucherLocationRepo fetch = { create }
   url = M.URL "https://8x8chv60ad.execute-api.eu-west-1.amazonaws.com/prod/sms"
   fetchOptions body = { body: writeJSON body, method: M.postMethod }
   create location name = do
-    let body = { store:  { name, location } }
+    let
+      body = { createdAt: "2020-03-22T11:20:00Z", store: { name, location } }
+      _ = spy "body" body
     response <- fetch url (fetchOptions body)
     pure (M.statusCode response # between 200 299)
