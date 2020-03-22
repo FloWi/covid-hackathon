@@ -6,6 +6,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./:/app/
+      # read-only mount the aws config and credentials from the hostsystem
+      - ~/.aws:/home/devuser/.aws:ro
     ports:
       - "3000"
       - "8921:5000"
