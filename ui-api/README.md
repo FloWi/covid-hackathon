@@ -1,6 +1,11 @@
 # Message Receiver
 
 ## Development
+Get the first binaries with:
+```
+npm install
+```
+
 ```
 # Build your application
 npx spago build
