@@ -5,7 +5,9 @@ You can edit this file as you like.
 { name = "telegram-bot"
 , dependencies =
   [ "console"
+  , "debug"
   , "effect"
+  , "milkis"
   , "node-fs"
   , "node-process"
   , "node-telegram-bot-api"

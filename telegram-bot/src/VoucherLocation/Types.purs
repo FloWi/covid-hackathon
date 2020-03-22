@@ -6,5 +6,5 @@ import Effect.Aff (Aff)
 import TelegramBot (Location)
 
 type VoucherLocationRepository = {
-    create :: Location -> String -> Aff Unit
+    create :: Location -> String -> Aff Boolean
 }
