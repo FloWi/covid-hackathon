@@ -12,3 +12,4 @@ services:
     entrypoint: /bin/sh
     stdin_open: true
     tty: true
+    user: devuser
