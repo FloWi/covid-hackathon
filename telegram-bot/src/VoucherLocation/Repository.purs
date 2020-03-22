@@ -2,7 +2,12 @@ module VoucherLocation.Repository where
 
 import Prelude
 
+import Data.JSDate (JSDate)
+import Data.JSDate as JSDate
+import Data.JSDate as JSDate
+import Data.JSDate as JSDate
 import Debug.Trace (spy)
+import Effect.Class (liftEffect)
 import Effect.Class.Console (log)
 import Milkis as M
 import Simple.JSON (writeJSON)
@@ -22,9 +27,9 @@ mkVoucherLocationRepo fetch = { create }
   where
   url = M.URL "https://8x8chv60ad.execute-api.eu-west-1.amazonaws.com/prod/sms"
   fetchOptions body = { body: writeJSON body, method: M.postMethod }
-  create location name = do
+  create location@{ longitude, latitude } name = do
+    createdAt <- JSDate.now >>= JSDate.toISOString # liftEffect
     let
-      body = { createdAt: "2020-03-22T11:20:00Z", store: { name, location } }
-      _ = spy "body" body
+      body = { createdAt, store: {  name, location: { lon: longitude, lat: latitude } } }
     response <- fetch url (fetchOptions body)
     pure (M.statusCode response # between 200 299)
