@@ -1,6 +1,7 @@
 # Cheeraty
 
-![](logo.png)
+<img src="logo.png" alt="Cheeraty - Eine platform um lokale Gutscheine in deiner Nachbarschaft anzubieten und zu finden" width="200"/>
+
 The Challenge was defined [here](CHALLENGE.md).
 The project entry in Devpost for the hackaton registration can be seen [here](https://devpost.com/software/1_544_lokale_gutscheine_nachbarschaft).
 A short demo video can be found [here](https://www.youtube.com/watch?v=Q__lILNWXIA).
