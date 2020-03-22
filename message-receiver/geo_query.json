@@ -1,0 +1,19 @@
+//GET vouchers/_search
+{
+  "query": {
+    "bool": {
+      "must": {
+        "match_all": {}
+      },
+      "filter": {
+        "geo_distance": {
+          "distance": "500m",
+          "store.location": {
+            "lat": 50.935,
+            "lon": 6.953
+          }
+        }
+      }
+    }
+  }
+}
