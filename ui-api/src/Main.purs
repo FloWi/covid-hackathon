@@ -151,7 +151,7 @@ main =
         logShow stores
 
 responseHeaders :: FO.Object String
-responseHeaders = FO.empty
+responseHeaders = FO.singleton "Access-Control-Allow-Origin" "*"
 
 run :: Input -> Effect (Promise Output)
 run { body } =
