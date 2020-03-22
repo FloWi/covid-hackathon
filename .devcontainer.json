@@ -20,7 +20,9 @@
 
 	// Set *default* container specific settings.json values on container create.
 	"settings": { 
-		"terminal.integrated.shell.linux": null
+		"terminal.integrated.shell.linux": null,
+		"purescript.addSpagoSources": true,
+		"purescript.buildCommand": "npx spago build --purs-args --json-errors"
 	},
 
 	// Add the IDs of extensions you want installed when the container is created.
