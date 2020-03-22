@@ -1,4 +1,47 @@
 {
   "@aws-cdk/core:enableStackNameDuplicates": "true",
-  "aws-cdk:enableDiffNoFail": "true"
+  "aws-cdk:enableDiffNoFail": "true",
+  "vpc-provider:account=397794117513:filter.vpc-id=vpc-0b0b036cf05edd0b6:region=eu-west-1:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-0b0b036cf05edd0b6",
+    "vpcCidrBlock": "178.22.0.0/20",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "Private",
+        "type": "Private",
+        "subnets": [
+          {
+            "subnetId": "subnet-0ff32f8e7858be3b9",
+            "cidr": "178.22.8.0/22",
+            "availabilityZone": "eu-west-1a",
+            "routeTableId": "rtb-0242f54c32a8c9321"
+          },
+          {
+            "subnetId": "subnet-02c141ef405d69901",
+            "cidr": "178.22.12.0/22",
+            "availabilityZone": "eu-west-1b",
+            "routeTableId": "rtb-01d86e0020bf66703"
+          }
+        ]
+      },
+      {
+        "name": "Public",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-08e4dbbc76ca54dd1",
+            "cidr": "178.22.0.0/22",
+            "availabilityZone": "eu-west-1a",
+            "routeTableId": "rtb-0156107140dd5cba6"
+          },
+          {
+            "subnetId": "subnet-0278082fdf1408fee",
+            "cidr": "178.22.4.0/22",
+            "availabilityZone": "eu-west-1b",
+            "routeTableId": "rtb-09b03323a924390d7"
+          }
+        ]
+      }
+    ]
+  }
 }

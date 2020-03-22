@@ -18,7 +18,7 @@
     "bundle": "npx spago bundle-module --to Main.js",
     "zip": "zip -r lambda.zip ./node_modules ./index.js ./Main.js",
     "test": "npx spago test",
-    "mariekondo": "rm lambda.zip && npm run bundle && rm -rf ./node_modules && npm install --production &&  npm run zip"
+    "mariekondo": "rm -f lambda.zip && npm run bundle && rm -rf ./node_modules && npm install --production &&  npm run zip && npm install"
   },
   "author": "",
   "license": "UNLICENSED"
