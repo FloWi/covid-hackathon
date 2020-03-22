@@ -120,7 +120,7 @@ fetch = M.fetch nodeFetch
 fetchGoogle :: Aff M.Response
 fetchGoogle = fetch (M.URL "https://www.google.com") M.defaultFetchOptions
 
-retrieveVoucherStores :: Location -> Aff (Array VoucherOfferJson)
+retrieveVoucherStores :: Location -> Aff VoucherApiResponse
 retrieveVoucherStores location = do
   let
     geoReq = { distanceMeters: 5, location: location }
@@ -129,12 +129,11 @@ retrieveVoucherStores location = do
   esResp <- getElasticSearch $ writeJSON esQuery
   text <- M.text esResp
   case readJSON text of
-    Left errors -> log (intercalateMap "\n" renderForeignError errors) $> []
-    Right (ok :: EsQueryResponse) -> pure $ map _._source ok.hits.hits
+    Left errors -> log (intercalateMap "\n" renderForeignError errors) $> { voucherOffers: [] }
+    Right (ok :: EsQueryResponse) -> pure $ { voucherOffers: map _._source.store ok.hits.hits }
 
 getElasticSearch :: String -> Aff M.Response
---getElasticSearch body = fetch (M.URL "https://vpc-covid-es-in-vpc-sattub32j5fqdokoslmc4kjvvi.eu-west-1.es.amazonaws.com/vouchers/_search") opts
-getElasticSearch body = fetch (M.URL "http://localhost:12345/vouchers/_search") opts
+getElasticSearch body = fetch (M.URL "https://vpc-covid-es-in-vpc-sattub32j5fqdokoslmc4kjvvi.eu-west-1.es.amazonaws.com/vouchers/_search") opts
   where
   opts =
     { method: M.postMethod
@@ -158,8 +157,8 @@ run :: Input -> Effect (Promise Output)
 run { body } =
   fromAff do
     log $ "Received body " <> body
-    output <- case readJSON example of
-      Left errors -> log (intercalateMap "\n" renderForeignError errors) $> []
+    output <- case readJSON body of
+      Left errors -> log (intercalateMap "\n" renderForeignError errors) $> { voucherOffers: [] }
       Right ok -> retrieveVoucherStores ok
     pure $ { statusCode: 200, body: writeJSON output, isBase64Encoded: false, headers: responseHeaders }
  -- handler :: Input -> Output -- handler = unsafePerformEffect <<< run
