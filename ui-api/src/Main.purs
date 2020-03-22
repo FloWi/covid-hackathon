@@ -123,7 +123,7 @@ fetchGoogle = fetch (M.URL "https://www.google.com") M.defaultFetchOptions
 retrieveVoucherStores :: Location -> Aff VoucherApiResponse
 retrieveVoucherStores location = do
   let
-    geoReq = { distanceMeters: 5, location: location }
+    geoReq = { distanceMeters: 700, location: location }
   let
     esQuery = toEsQuery geoReq
   esResp <- getElasticSearch $ writeJSON esQuery

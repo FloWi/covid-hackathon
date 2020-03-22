@@ -1,6 +1,10 @@
-# Services Overview
+# Cheeraty
 
+![](logo.png)
+The Challenge was defined [here](CHALLENGE.md).
+A short demo video can be found [here](https://www.youtube.com/watch?v=Q__lILNWXIA).
 We organizse ourselves [here](TINYTASKS.md).
+Contributors of the project can be found [here](CONTRIBUTORS.md).
 
 ## Tech Stack
 
