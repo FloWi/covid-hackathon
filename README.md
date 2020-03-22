@@ -2,6 +2,7 @@
 
 ![](logo.png)
 The Challenge was defined [here](CHALLENGE.md).
+The project entry in Devpost for the hackaton registration can be seen [here](https://devpost.com/software/1_544_lokale_gutscheine_nachbarschaft).
 A short demo video can be found [here](https://www.youtube.com/watch?v=Q__lILNWXIA).
 To try it yourself you can click [here](http://de.hivemind-vs-covid.s3-website-eu-west-1.amazonaws.com).
 
