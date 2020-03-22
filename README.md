@@ -3,6 +3,11 @@
 ![](logo.png)
 The Challenge was defined [here](CHALLENGE.md).
 A short demo video can be found [here](https://www.youtube.com/watch?v=Q__lILNWXIA).
+To try it yourself you can click [here](http://de.hivemind-vs-covid.s3-website-eu-west-1.amazonaws.com).
+
+To enter your own data you have to contact the Telegram bot called `@heinz_dembowski_bot`.
+The bot will be deactivated soon though.
+
 We organizse ourselves [here](TINYTASKS.md).
 Contributors of the project can be found [here](CONTRIBUTORS.md).
 
