@@ -6,6 +6,10 @@
     font-size: 16px
 }
 
+.map {
+    width: 600px;
+    height: 400px;
+}
 form.tweet { 
     margin-bottom: 16px; 
     width: 100% 
@@ -27,4 +31,9 @@ div.tweet {
     display: flex;
     flex-flow: row;
     align-items: center
+}
+
+a.legal {
+    font-size: small;
+    margin: 5px 5px 5px 5px;
 }
