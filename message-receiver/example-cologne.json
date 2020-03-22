@@ -2,11 +2,6 @@
   "createdAt": "2020-03-22T11:20:00Z",
   "store": {
     "name": "Köllsche Bäckerei Müller und Söhne GmbH",
-    "address": {
-      "street": "Langer-Straßen-Name 333b",
-      "zip": "50667",
-      "city": "Köln"
-    },
     "location": {
       "lat": 50.935173,
       "lon": 6.953101

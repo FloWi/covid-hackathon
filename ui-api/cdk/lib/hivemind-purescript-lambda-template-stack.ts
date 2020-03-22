@@ -42,6 +42,10 @@ export class HivemindPurescriptLambdaTemplateStack extends cdk.Stack {
       deployOptions: {
         loggingLevel: apigateway.MethodLoggingLevel.INFO,
         dataTraceEnabled: true
+      },
+      defaultCorsPreflightOptions: {
+        allowOrigins: apigateway.Cors.ALL_ORIGINS,
+        allowMethods: apigateway.Cors.ALL_METHODS // this is also the default
       }
     });
 

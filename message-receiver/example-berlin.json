@@ -2,11 +2,6 @@
   "createdAt": "2020-03-22T11:20:00Z",
   "store": {
     "name": "Berliner Bäckerei Müller und Söhne GmbH",
-    "address": {
-      "street": "Langer-Straßen-Name 333b",
-      "zip": "12345",
-      "city": "Berlin"
-    },
     "location": {
       "lat": 52.52437,
       "lon": 13.41053
