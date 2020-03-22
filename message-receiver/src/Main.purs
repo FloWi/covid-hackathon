@@ -36,19 +36,8 @@ type VoucherOffer
     , location :: Location
     }
 
-example :: String
-example =
-  """
-  { "info": "I have vouchers", 
-    "location": { "lon": 52.52437, "lat": 13.41053 }
-  }
-  """
-
 fetch :: M.Fetch
 fetch = M.fetch nodeFetch
-
-fetchGoogle :: Aff M.Response
-fetchGoogle = fetch (M.URL "https://www.google.com") M.defaultFetchOptions
 
 postElasticSearch :: String -> Aff M.Response
 postElasticSearch body = fetch (M.URL "https://vpc-covid-es-in-vpc-sattub32j5fqdokoslmc4kjvvi.eu-west-1.es.amazonaws.com/vouchers/voucherOffer/") opts
@@ -65,24 +54,18 @@ logVoucherOffer vo = log (writeJSON vo)
 responseHeaders :: FO.Object String
 responseHeaders = FO.empty
 
-foo :: String -> Aff M.Response
-foo body = do
-  fiber <- forkAff $ postElasticSearch body
-  result <- joinFiber fiber
-  pure $ result
-
-
 run :: Input -> Effect (Promise Output)
-run { body } = fromAff do
-  log $ "Received body " <> body
-  let
-    voucherOffer = readJSON example
-  case voucherOffer of
-    Left errors -> log (intercalateMap "\n" renderForeignError errors)
-    Right ok -> logVoucherOffer ok
-  maybeText <- attempt $ postElasticSearch body >>= M.text
-  log $ "Received this from elasticsearch " <> (show maybeText)
-  --log $ "I'm here " <> text
-  pure $ { statusCode: 200, body: responseBody, isBase64Encoded: false, headers: responseHeaders }
+run { body } =
+  fromAff do
+    log $ "Received body " <> body
+    let
+      voucherOffer = readJSON body
+    case voucherOffer of
+      Left errors -> log (intercalateMap "\n" renderForeignError errors)
+      Right ok -> logVoucherOffer ok
+    maybeText <- attempt $ postElasticSearch body >>= M.text
+    log $ "Received this from elasticsearch " <> (show maybeText)
+    --log $ "I'm here " <> text
+    pure $ { statusCode: 200, body: responseBody, isBase64Encoded: false, headers: responseHeaders }
   where
-  responseBody = writeJSON { hello: "World" }
+  responseBody = writeJSON { result: "Posted request successfully to elasticsearch" }
