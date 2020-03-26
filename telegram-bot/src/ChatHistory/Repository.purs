@@ -36,28 +36,22 @@ mkChatHistoryRepoInMemory = do
     , deleteChatHistory
     }
 
-type ChatbotHistoryElasticsearchEndpointUrl
-  = String
+newtype EsEndpointUrl
+  = EsEndpointUrl String
 
-mkChatHistoryRepoInElasticsearch :: ChatbotHistoryElasticsearchEndpointUrl -> Effect ChatHistoryRepository
+mkChatHistoryRepoInElasticsearch :: EsEndpointUrl -> Effect ChatHistoryRepository
 mkChatHistoryRepoInElasticsearch esEndpoint = do
   ref <- new mempty
   let
-    getChatHistory chatId =
-      liftEffect do
-        fold <<< Map.lookup chatId <$> read ref
+    getChatHistory chatId = liftEffect (fold <<< Map.lookup chatId <$> read ref)
 
-    addToHistory chatId msg =
-      liftEffect do
-        ref # modify_ (Map.alter upsert chatId)
+    addToHistory chatId msg = liftEffect (ref # modify_ (Map.alter upsert chatId))
       where
       upsert = case _ of
         Nothing -> Just (ChatHistory [ msg ])
         Just (ChatHistory ch) -> Just (ChatHistory (msg : ch))
 
-    deleteChatHistory chatId =
-      liftEffect do
-        ref # modify_ (Map.delete chatId)
+    deleteChatHistory chatId = liftEffect (ref # modify_ (Map.delete chatId))
   pure
     { getChatHistory
     , addToHistory

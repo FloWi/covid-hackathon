@@ -1,7 +1,7 @@
 module Main where
 
 import Prelude
-import ChatHistory.Repository (ChatbotHistoryElasticsearchEndpointUrl, mkChatHistoryRepoInElasticsearch)
+import ChatHistory.Repository (EsEndpointUrl(..), mkChatHistoryRepoInElasticsearch)
 import Control.Monad.Except (runExcept)
 import Data.Either (Either(..))
 import Data.Maybe (fromMaybe')
@@ -25,8 +25,8 @@ getToken = lookupEnv "TELEGRAM_BOT_TOKEN" <#> fromMaybe' (\_ -> unsafeCrashWith 
 getVoucherRepoEndpoint :: Effect VoucherRepoEndpointUrl
 getVoucherRepoEndpoint = lookupEnv "VOUCHER_LOCATION_REPO_ENDPOINT_URL" <#> fromMaybe' (\_ -> unsafeCrashWith "Can't get voucher repo endpoint 'VOUCHER_LOCATION_REPO_ENDPOINT_URL'")
 
-getChatbotHistoryEndpoint :: Effect ChatbotHistoryElasticsearchEndpointUrl
-getChatbotHistoryEndpoint = lookupEnv "CHATBOT_HISTORY_ELASTICSEARCH_ENDPOINT_URL" <#> fromMaybe' (\_ -> unsafeCrashWith "Can't get chatbot history endpoint 'CHATBOT_HISTORY_ELASTICSEARCH_ENDPOINT_URL'")
+getChatbotHistoryEndpoint :: Effect EsEndpointUrl
+getChatbotHistoryEndpoint = map EsEndpointUrl (lookupEnv "CHATBOT_HISTORY_ELASTICSEARCH_ENDPOINT_URL" <#> fromMaybe' (\_ -> unsafeCrashWith "Can't get chatbot history endpoint 'CHATBOT_HISTORY_ELASTICSEARCH_ENDPOINT_URL'"))
 
 main :: Effect Unit
 main = do
@@ -40,7 +40,7 @@ main = do
 type Ctx
   = Record (MessageHandler.Ctx ())
 
-mkContext :: Bot -> VoucherRepoEndpointUrl -> ChatbotHistoryElasticsearchEndpointUrl -> Effect Ctx
+mkContext :: Bot -> VoucherRepoEndpointUrl -> EsEndpointUrl -> Effect Ctx
 mkContext bot voucherRepoEndpointUrl chatbotHistoryEndpointUrl = do
   historyRepo <- mkChatHistoryRepoInElasticsearch chatbotHistoryEndpointUrl
   let
