@@ -1,5 +1,7 @@
 var Main = require('./output/Main/index');
 
+import image from './assets/header-logo.svg';
+
 function main () {
     /*
     Here we could add variables such as

@@ -3,43 +3,62 @@ module Reducer where
 import Prelude
 
 import Affjax as Ax
-import Affjax.RequestBody (RequestBody)
 import Affjax.RequestBody as RequestBody
-import Affjax.ResponseFormat (ResponseFormat)
 import Affjax.ResponseFormat as ResponseFormat
 import Data.Array (fold, take)
-import Data.Array as Array
 import Data.Bifunctor (lmap)
 import Data.Either (Either(..))
-import Data.Foldable (traverse_)
-import Data.List.Types (NonEmptyList(..))
+import Data.Foldable (traverse_,for_)
+import Data.List.Types (NonEmptyList)
 import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Traversable (traverse)
 import Effect (Effect)
 import Effect.Aff (Aff)
 import Effect.Class (liftEffect)
 import Effect.Console (log)
-import Effect.Now as Now
-import Foreign (ForeignError(..), renderForeignError)
+import Foreign (ForeignError, renderForeignError)
 import Global.Unsafe (unsafeEncodeURIComponent)
-import Mapbox (makeMap, setCenter, setZoom)
+import Mapbox (addMarker, makeMap, setCenter, setZoom)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (preventDefault, stopPropagation, targetValue)
 import React.Basic.Events (handler)
-import React.Basic.Hooks (JSX, ReactComponent, component, element, memo, useEffect, useReducer, useState, (/\))
+import React.Basic.Hooks (JSX, ReactComponent,Hook, UseState, coerceHook, component, element, memo, useEffect, useReducer, useState, (/\))
 import React.Basic.Hooks as React
-import React.Basic.Hooks.Aff (useAff)
+import React.Basic.Hooks.Aff (UseAff, useAff)
 import Simple.JSON as JSON
 import Simple.JSON as Json
-import Web.DOM.Element (className, id)
-import Web.DOM.ParentNode (children)
-import Web.HTML.HTMLBaseElement (href)
-import Web.XHR.XMLHttpRequest (response)
+
+import Data.Newtype (class Newtype)
+import Data.Tuple (Tuple)
+
+newtype UseAffReducer state action hooks
+  = UseAffReducer
+  ( UseAff (Maybe action) Unit
+      ( UseState (Maybe action)
+          (UseState state hooks)
+      )
+  )
+
+derive instance ntUseAffReducer ∷ Newtype (UseAffReducer state action hooks) _
+useAffReducer ∷ ∀ state action. Eq action => state -> (state -> action -> Aff state) -> Hook (UseAffReducer state action) (Tuple state (action -> Effect Unit))
+useAffReducer initialState reducer =
+  coerceHook React.do
+    state /\ modifyState <- useState initialState
+    maybeAction /\ modifyAction <- useState Nothing
+    let
+      dispatch = modifyAction <<< const <<< Just
+    useAff maybeAction
+      $ for_ maybeAction \action -> do
+          newState <- reducer state action
+          liftEffect do
+            modifyState (const newState)
+            modifyAction (const Nothing)
+    pure (state /\ dispatch)
 
 type Location
   = { lat :: Number
     , lon :: Number
     }
-
 
 type UserAddress
   = { name :: String
@@ -81,7 +100,9 @@ data Action
 
 reducer :: AppState -> Action -> AppState
 reducer state (SendQuery query) = state { query = Just query }
+
 reducer state (SendUserAddress address) = state { address = Just address }
+
 reducer state (SendStores stores) = state { stores = stores }
 
 convert :: MapboxResponse -> Either String UserAddress
@@ -118,21 +139,22 @@ retrieveLocation query = do
         userAddress <- convert mapboxResponse
         pure userAddress
 
-
 retrieveStores :: Location -> Aff (Either String (Array Store))
-retrieveStores location = do 
+retrieveStores location = do
   maybeResp <- Ax.post ResponseFormat.string voucherApiUri request <#> lmap (Ax.printError)
-  pure $
-    do
-      resp <- maybeResp
-      let
-        maybeVoucherApiResponse :: Either (NonEmptyList ForeignError) VoucherApiResponse
-        maybeVoucherApiResponse = JSON.readJSON resp.body
-      voucherResponse <- lmap renderErrors maybeVoucherApiResponse
-      pure voucherResponse.voucherOffers 
-      where
-        request = Just $ RequestBody.string $ Json.writeJSON location
-        voucherApiUri = "https://kqz6zq6i08.execute-api.eu-west-1.amazonaws.com/prod/api"
+  pure
+    $ do
+        resp <- maybeResp
+        let
+          maybeVoucherApiResponse :: Either (NonEmptyList ForeignError) VoucherApiResponse
+          maybeVoucherApiResponse = JSON.readJSON resp.body
+        voucherResponse <- lmap renderErrors maybeVoucherApiResponse
+        pure voucherResponse.voucherOffers
+  where
+  request = Just $ RequestBody.string $ Json.writeJSON location
+
+  voucherApiUri = "https://kqz6zq6i08.execute-api.eu-west-1.amazonaws.com/prod/api"
+
 
 mkReducer :: String -> Effect (ReactComponent {})
 mkReducer url = do
@@ -168,36 +190,69 @@ mkReducer url = do
               _ <- liftEffect $ log $ show resp
               liftEffect $ dispatch (SendStores resp)
         Nothing -> pure unit
-
     pure
       $ R.div
-          { children:
-            [ element tweetInput { query: state.query, dispatch }
-            , element stores { stores : state.stores }
-            , element mapContainer { address: state.address }
-            , R.footer {
-              children: [
-                R.a {
-                  className : "legal",
-                  href : "https://www.hivemindtechnologies.com/privacy/",
-                  children : [R.text "Privacy / Datenschutz"]
-                },
-                R.a {
-                  className : "legal",
-                  href : "https://www.hivemindtechnologies.com/imprint/",
-                  children : [R.text "Impressum"]
+          { className: "container"
+          , children:
+            [ R.div
+                { className: "row"
+                , children:
+                  [ R.div
+                      { className: "col s3"
+                      , children:
+                        [ R.img
+                            { src: "/assets/header-logo.svg"
+                            }
+                        ]
+                      }
+                  , R.div
+                      { className: "col s9"
+                      , children:
+                        [ R.div
+                            { className: "row"
+                            , children: [ R.h3 { children: [ R.text "Finden und unterstützen Sie Geschäfte aus Ihrer Gegend." ] } ]
+                            }
+                        , R.div
+                            { className: "row"
+                            , children:
+                              [ R.text "Auf cheeraty können Sie Gutscheine für lokale Geschäfte erwerben, um diesen über die Zeit der Schließung zu helfen.\nSo haben Ihre Lieblingsgeschäfte weiterhin genug Umsatz um zu überleben und können Ihnen in einigen Worten wie gewohnt die Türen öffnen.\n#stayathome #flattenthecurve #supportyourlocalstores"
+                              ]
+                            }
+                        ]
+                      }
+                  ]
                 }
-              ]
-            }
+            , R.div
+                { className: "row"
+                , children:
+                  [ R.div
+                      { className: "col s12"
+                      , children: [ element tweetInput { query: state.query, dispatch } ]
+                      }
+                  ]
+                }
+            , R.div
+                { className: "row"
+                , children:
+                  [ R.div
+                      { className: "col s3"
+                      , children: [ element stores { stores: state.stores } ]
+                      }
+                  , R.div
+                      { className: "col s9"
+                      , children: [ element mapContainer { address: state.address , stores : state.stores} ]
+                      }
+                  ]
+                }
             ]
-          , className: "container"
           }
 
 storeHtml :: Store -> JSX
 storeHtml { name, location } =
   R.div
-    { children:
-      [ R.text name
+    { className: "row"
+    , children:
+      [ R.h6 { children: [ R.text name ] }
       --, R.text description
       ]
     }
@@ -208,10 +263,10 @@ mkStores = do
     pure
       $ R.div
           { children: map storeHtml props.stores
-          , className: "stores"
+          , className: "container"
           }
 
-mkMap :: Effect (ReactComponent { address :: Maybe UserAddress })
+mkMap :: Effect (ReactComponent { address :: Maybe UserAddress, stores :: Array Store })
 mkMap = do
   component "Map" \props -> React.do
     let
@@ -221,6 +276,10 @@ mkMap = do
       m <- makeMap "map"
       setCenter m location.lat location.lon
       setZoom m 15
+      log $ "Adding markers" <> (show props.stores)
+      addMarker m 50.912915 6.961424 "Hello" "World"
+      stores <- traverse (\s -> log "Adding marker" *> addMarker m s.location.lat s.location.lat s.name "" ) props.stores
+      log $ "Added stores" <> show stores
       log "Map loaded!"
       pure (pure unit)
     pure
@@ -243,11 +302,16 @@ mkTweetInput = do
           , children:
             [ R.input
                 { value
+                , id: "address-search"
                 , onChange:
                   handler (preventDefault >>> stopPropagation >>> targetValue)
                     $ traverse_ (setValue <<< const)
                 , className: "tweet"
                 , placeholder: "PLZ oder Stadt/Ort eingeben"
+                }
+            , R.label
+                { htmlFor: "address-search"
+                , children: [ R.text "In welcher Stadt wohnen Sie?" ]
                 }
             ]
           , className: "tweet"
