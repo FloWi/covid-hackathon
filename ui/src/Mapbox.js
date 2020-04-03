@@ -22,14 +22,30 @@ exports.makeMapUncurried = function (container) {
     }
 }
 
-exports.setCenterUncurried = function(map, lat, lon) {
-    return function() {
+exports.setCenterUncurried = function (map, lat, lon) {
+    return function () {
         map.setCenter([lon, lat]);
     }
 }
 
-exports.setZoomUncurried = function(map, zoom) {
-    return function() {
+exports.setZoomUncurried = function (map, zoom) {
+    return function () {
         map.setZoom(zoom);
+    }
+}
+
+exports.addMarkerUncurried = function (map, lat, lon, title, description) {
+    return function () {
+        var el = document.createElement('i');
+        el.nodeValue = 'add';
+        el.className = 'material-icons';
+
+        console.log("About to add marker ~> " + el);
+        var marker = new mapboxgl.Marker(el)
+            .setLngLat([lat, lon])
+            .setPopup(new mapboxgl.Popup({ offset: 25 })
+                .setHTML('<h3>' + title + '</h3><p>' + description + '</p>'))
+            .addTo(map);
+        console.log("Added marker" + marker );
     }
 }

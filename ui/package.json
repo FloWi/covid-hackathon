@@ -6,9 +6,17 @@
   "directories": {
     "test": "test"
   },
+  "staticFiles": {
+    "staticPath": [
+      {
+        "staticPath": "assets",
+        "staticOutDir": "assets"
+      }
+    ]
+  },
   "scripts": {
     "dev": "parcel --no-cache -p 9000 dev.html",
-    "bundle": "npx spago bundle-app --to output/Main.js && npx parcel build -d public --bundle-node-modules index.html styles.css",
+    "bundle": "npx spago bundle-app --to output/Main.js && npx parcel build -d public --bundle-node-modules index.html styles.css assets/",
     "zip": "(cd public; zip -r ../ui.zip .)",
     "test": "npx spago test"
   },
@@ -19,12 +27,15 @@
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "babel-preset-env": "^1.7.0",
     "parcel-bundler": "^1.12.4",
+    "parcel-plugin-static-files-copy": "^2.3.1",
     "sass": "^1.26.3",
     "spago": "^0.14.0"
   },
   "dependencies": {
     "@mapbox/mapbox-sdk": "^0.9.0",
+    "assets": "^3.0.1",
     "mapbox-gl": "^1.8.1",
+    "materialize-css": "^1.0.0-rc.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   }
